@@ -1,0 +1,49 @@
+* {
+    margin:0;
+    padding:0;
+}
+
+.myslider-box {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.myslider-box .myslider-ul {
+    position: absolute;
+    left: 0;
+    clear: both;
+    list-style: none;
+}
+
+.myslider-box .myslider-ul .myslider-li {
+    float: left
+}
+
+.myslider-box .myslider-dots {
+    position: absolute;
+    width: 100%;
+    bottom: 10px;
+    text-align: center;
+    z-index: 999;
+}
+
+.myslider-box .myslider-dots li {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: url(../img/dot.png) no-repeat 0 0;
+    -webkit-background-size: 8px 8px;
+    background-size: 8px 8px;
+    margin-right: 10px;
+}
+
+.myslider-box .myslider-dots li.active {
+    background: url(../img/dot-active.png) no-repeat 0 0;
+    -webkit-background-size: 8px 8px;
+    background-size: 8px 8px;
+}
+
+.myslider-box .myslider-dots li:last-child {
+    margin-right: 0;
+}
