@@ -64,8 +64,11 @@ app.controller("index2Ctrl", ["$scope", '$timeout', function ($scope, $timeout) 
                     title: "标题1",
                     imageUrl: "../../img/1.jpg"
                 }, {
-                    title: "标题2",
-                    imageUrl: "../../img/2.jpg"
+                    title: "标题4",
+                    imageUrl: "../../img/4.jpg"
+                }, {
+                    title: "标题5",
+                    imageUrl: "../../img/5.jpg"
                 }]
                 aa = 1;
             }
