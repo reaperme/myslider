@@ -2,38 +2,46 @@
  * Created by sc09395 on 2015/7/13 0013.
  */
 var _myApp = angular.module("_myApp", []);
-_myApp.directive('myCarousel', ['$rootScope', '$timeout', '$parse', function ($rootScope, $timeout, $parse) {
+_myApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', function ($rootScope, $timeout, $compile) {
     /*
      * playInterval : 自动播放间隔
      * */
     function mySlider(config) {
         this.timer;
-        this.size = config.scope.myData && config.scope.myData.length || 0;
-        this.width = this.getWinSize().width;
+        this.hasChange = config.hasChange || false;
+        this.size = config.scope.myData && config.scope.myData.length || 0;//滚动个数
+        this.width = this.getWinSize().width;//默认滚动宽度为屏幕宽度
         this.minleft = -this.width * (this.size + 1);//最小left值，注意是负数[不循环情况下的值]
         this.maxleft = 0;//最大left值[不循环情况下的值]
         this.now_left = 0;//初始位置信息[不循环情况下的值]
         this.point_x = null;//记录一个x坐标
         this.point_y = null;//记录一个y坐标
         this.index = 0;//开始索引
-        this.busy = false;
-        this.playInterval = config.playInterval || 3000;
-        this.scrollTime = 300;
-        this.scope = config.scope;
-        this.box = config.box;
-        this.init();
+        this.busy = false;//是否在运动
+        this.playInterval = config.playInterval || 3000;//动画间隔
+        this.scrollTime = 500;//动画时间
+        this.scope = config.scope;//作用域
+        this.box = config.box;//滚动盒子
+        this.hold = false;//手指hold住的时候停止play()运行
+        this.init();//初始化
     }
 
     mySlider.prototype = {
         constructor: mySlider,
+        destory: function () {
+
+        },
         init: function () {
             var self = this;
+            this.box.removeAttr("style");
+            //console.log(this.box.attr("style"))
             if (this.checkData()) {
                 this.initDots()
                 if (self.scope.myData.length > 1) {
                     this.initLoop();
                     this.bindEvents(this.box);
                     this.play();
+                    //console.log(this.box.attr("style"))
                 }
             }
         },
@@ -83,12 +91,17 @@ _myApp.directive('myCarousel', ['$rootScope', '$timeout', '$parse', function ($r
                 if (e.touches.length == 1 && !self.busy) {
                     self.point_x = e.touches[0].screenX;
                     self.point_y = e.touches[0].screenY;
+                    self.hold = true;
                 }
             }).on('touchmove', function (e) {
+                self.hold = true;
+                //console.log("move:" + self.hold);
                 if (e.touches.length == 1 && !self.busy) {
                     return self.move(e.touches[0].screenX, e.touches[0].screenY, e);
                 }
             }).on('touchend', function (e) {
+                self.hold = false;
+                //console.log("end:" + self.hold);
                 !self.busy && self.move_end();
             });
         },
@@ -97,10 +110,10 @@ _myApp.directive('myCarousel', ['$rootScope', '$timeout', '$parse', function ($r
          * */
         play: function () {
             var self = this;
+            if (self.busy) return false;
             $timeout.cancel(self.timer);
             self.timer = $timeout(function () {
-                //console.log(self.size);
-                console.log(self.scope.myData);
+                //console.log(self.index);
                 self.goIndex(self.index + 1);
             }, self.playInterval);
         },
@@ -108,8 +121,9 @@ _myApp.directive('myCarousel', ['$rootScope', '$timeout', '$parse', function ($r
          * 跳到指定索引页
          * */
         goIndex: function (index) {
+            //console.log(this.scope.mySlider);
             var self = this;
-            if (self.busy) return;
+            if (self.hold || self.busy) return;
             $timeout.cancel(self.timer);
 
             self.busy = true;
@@ -132,6 +146,7 @@ _myApp.directive('myCarousel', ['$rootScope', '$timeout', '$parse', function ($r
                     self.complete(index);
                 }, self.scrollTime);
             }
+            //console.log(index)
             self.updateDotsStatus(index);
         },
         /*
@@ -159,6 +174,7 @@ _myApp.directive('myCarousel', ['$rootScope', '$timeout', '$parse', function ($r
          * */
         complete: function (index) {
             var self = this;
+            if (this.hasChange) return false;
             self.busy = false;
             //self.config.callback && self.config.callback(self.index);
             if (index == -1) {
@@ -209,6 +225,7 @@ _myApp.directive('myCarousel', ['$rootScope', '$timeout', '$parse', function ($r
          * */
         move_end: function () {
             var self = this;
+            self.hold = false;
             var changeX = this.now_left % this.width, ind;
             if (this.now_left < this.minleft) {//手指向左滑动
                 ind = this.index + 1;
@@ -238,10 +255,10 @@ _myApp.directive('myCarousel', ['$rootScope', '$timeout', '$parse', function ($r
                 time = flg == 1 ? this.scrollTime : 0;
             return {
                 '-webkit-transition': '-webkit-transform ' + time + 'ms',
-                '-webkit-transform': 'translate3d(' + x + 'px,0,0)',
+                'transition': 'transform ' + time + 'ms',
                 '-webkit-backface-visibility': 'hidden',
                 'backface-visibility': 'hidden',
-                'transition': 'transform ' + time + 'ms',
+                '-webkit-transform': 'translate3d(' + x + 'px,0,0)',
                 'transform': 'translate3d(' + x + 'px,0,0)'
             };
         },
@@ -275,7 +292,6 @@ _myApp.directive('myCarousel', ['$rootScope', '$timeout', '$parse', function ($r
         scope: {
             myData: '=',//数据源
             myInterval: "@",//滚动间隔
-            name: '=',
             myChange: "&"//每切换一页的回调函数，回调函数接受一个索引值做为参数
         },
         transclude: true,
@@ -287,7 +303,7 @@ _myApp.directive('myCarousel', ['$rootScope', '$timeout', '$parse', function ($r
             }
         },
         template: '<div class="myslider-box">' +
-        '<ul class="myslider-ul" ng-transclude></ul>' +
+        '<ul class="myslider-ul" ng-transclude ng-if="myData.length>0"></ul>' +// ng-if="myData.length > 0"
         '<ol class="myslider-dots">' +
         '<li ng-repeat="item in dotData track by $index" ng-click = "mySlider.goIndex($index)" ng-class=\'{true:"active",false:""}[carouselCtrl.sliders[$index].isSelected]\'></li>' +
         '</ol>' +
@@ -295,24 +311,27 @@ _myApp.directive('myCarousel', ['$rootScope', '$timeout', '$parse', function ($r
         link: function (scope, elem, iAttrs) {
             var myInterval = iAttrs.myInterval;
             scope.$watch('myData', function (newValue, oldValue) {
-                console.log(scope.myData);
-                try{
+
+                try {
                     $timeout.cancel(scope.mySlider.timer);
+                    scope.carouselCtrl.sliders = [];//清空dots
                     delete scope.mySlider;
                 }
-                catch(e){}
+                catch (e) {
+                }
                 scope.mySlider = new mySlider({
                     scope: scope,
                     box: elem.find('ul'),
                     playInterval: myInterval
                 })
-                scope.mySlider.goIndex(0);
+                console.log(scope.mySlider.index)
+
             })
         }
     };
 }]);
 
-_myApp.directive('mySlider', ["$parse", function ($parse) {
+_myApp.directive('mySlider', ["$compile", function ($compile) {
     return {
         scope: {},
         require: '^?myCarousel',
@@ -327,7 +346,7 @@ _myApp.directive('mySlider', ["$parse", function ($parse) {
             var repeatMatch = ngRepeat.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?\s*$/),
                 repeatCollections = repeatMatch[2];
             scope.$parent['dataSource'] = repeatCollections;
-
+            //console.log(scope)
             controller.addSlider(scope);
             if (controller.sliders.length > 0) {
                 angular.forEach(controller.sliders, function (item, index) {
