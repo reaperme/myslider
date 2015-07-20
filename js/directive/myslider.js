@@ -30,12 +30,12 @@ _myApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', function (
         constructor: mySlider,
         init: function () {
             var self = this;
-            if (this.checkData()) {
-                this.initDots()
+            if (this.checkData.call(this)) {
+                this.initDots.call(this);
                 if (self.scope.myData.length > 1) {
-                    this.initLoop();
-                    this.bindEvents(this.box);
-                    this.play();
+                    this.initLoop.call(this);
+                    this.bindEvents.call(this, this.box);
+                    this.play.call(this);
                 }
             }
         },
@@ -98,6 +98,9 @@ _myApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', function (
                 //console.log("end:" + self.hold);
                 !self.busy && self.move_end();
             });
+        },
+        switch:function(){
+            
         },
         /*
          * 自动播放
@@ -303,23 +306,31 @@ _myApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', function (
         '<li ng-repeat="item in dotData track by $index" ng-click = "mySlider.goIndex($index)" ng-class=\'{true:"active",false:""}[carouselCtrl.sliders[$index].isSelected]\'></li>' +
         '</ol>' +
         '</div>',
-        link: function (scope, elem, iAttrs) {
-            var myInterval = iAttrs.myInterval;
-            scope.$watch('myData', function (newValue, oldValue) {
-                if (newValue !== oldValue) {//数据发生改变
-                    $timeout.cancel(scope.mySlider.timer);
-                    scope.mySlider.change = true;
-                    scope.carouselCtrl.sliders = [];//清空dots
-                }
-                $timeout(function () {
-                    scope.mySlider = new mySlider({
-                        scope: scope,
-                        box: elem.find('ul'),
-                        playInterval: myInterval,
-                        change: false
+        compile:function(){
+            return {  
+                pre: function (scope, elem, iAttrs) {  
+                    console.log(scope)
+                    var myInterval = iAttrs.myInterval;
+                    scope.$watch('myData', function (newValue, oldValue) {
+                        if (newValue !== oldValue) {//数据发生改变
+                            $timeout.cancel(scope.mySlider.timer);
+                            scope.mySlider.change = true;
+                            scope.carouselCtrl.sliders = [];//清空dots
+                        }
+                        $timeout(function () {
+                            scope.mySlider = new mySlider({
+                                scope: scope,
+                                box: elem.find('ul'),
+                                playInterval: myInterval,
+                                change: false
+                            })
+                        })
                     })
-                })
-            })
+                },  
+                post: function (scope, element, attributes) {  
+                    console.log(scope)
+                }  
+            };  
         }
     };
 }]);
@@ -332,22 +343,32 @@ _myApp.directive('mySlider', ["$compile", function ($compile) {
         template: '<li class="myslider-li" ng-transclude></li>',
         replace: true,
         transclude: true,
-        link: function (scope, elem, iAttrs, controller) {
-            scope.isSelected = false;
-            var ngRepeat = iAttrs.ngRepeat;
-
-            var repeatMatch = ngRepeat.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?\s*$/),
-                repeatCollections = repeatMatch[2];
-            scope.$parent['dataSource'] = repeatCollections;
-            //console.log(scope)
-            controller.addSlider(scope);
-            if (controller.sliders.length > 0) {
-                angular.forEach(controller.sliders, function (item, index) {
-                    if (index == 0) {
-                        item.isSelected = true;
+        compile:function(){
+            console.log(122)
+            return {
+                pre:function (scope, elem, iAttrs, controller){
+                    var ngRepeat = iAttrs.ngRepeat;
+                    var repeatMatch = ngRepeat.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?\s*$/),
+                        repeatCollections = repeatMatch[2];
+                    scope.$parent['dataSource'] = repeatCollections;
+                    scope.isSelected = false;
+                    
+                    controller.addSlider(scope);
+                    if (controller.sliders.length > 0) {
+                        controller.sliders[0].isSelected = true;
+                        // angular.forEach(controller.sliders, function (item, index) {
+                        //     if (index == 0) {
+                        //         item.isSelected = true;
+                        //     }
+                        // })
                     }
-                })
+                },  
+                post: function (scope, elem, iAttrs, controller) {  
+                    // console.log(scope)
+                    
+                }  
             }
         }
+        
     };
 }]);

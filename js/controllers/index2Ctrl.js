@@ -61,14 +61,17 @@ app.controller("index2Ctrl", ["$scope", '$timeout', function ($scope, $timeout) 
     $scope.aaa = function () {
             if (aa === 0) {
                 $scope.data = [{
-                    title: "标题1",
-                    imageUrl: "../../img/1.jpg"
+                    title: "标题7",
+                    imageUrl: "../../img/7.jpg"
                 }, {
-                    title: "标题4",
-                    imageUrl: "../../img/4.jpg"
+                    title: "标题8",
+                    imageUrl: "../../img/8.jpg"
                 }, {
-                    title: "标题5",
-                    imageUrl: "../../img/5.jpg"
+                    title: "标题9",
+                    imageUrl: "../../img/9.jpg"
+                }, {
+                    title: "标题10",
+                    imageUrl: "../../img/10.jpg"
                 }]
                 aa = 1;
             }
