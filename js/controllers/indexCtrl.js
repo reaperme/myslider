@@ -5,34 +5,6 @@ app.controller("indexCtrl", ["$scope", '$timeout', function ($scope, $timeout) {
     $scope.$on('bbb', function (event, data) {
         console.log(data.index);
     })
-    var b = [{
-        title: "标题1",
-        imageUrl: "../../img/1.jpg"
-    }, {
-        title: "标题2",
-        imageUrl: "../../img/2.jpg"
-    }, {
-        title: "标题3",
-        imageUrl: "../../img/3.jpg"
-    }, {
-        title: "标题4",
-        imageUrl: "../../img/4.jpg"
-    }, {
-        title: "标题5",
-        imageUrl: "../../img/5.jpg"
-    }, {
-        title: "标题6",
-        imageUrl: "../../img/6.jpg"
-    }]
-
-
-    var a = [{
-        title: "标题1",
-        imageUrl: "../../img/1.jpg"
-    }, {
-        title: "标题2",
-        imageUrl: "../../img/2.jpg"
-    }]
 
     $scope.data = [{
         title: "标题1",
@@ -52,6 +24,15 @@ app.controller("indexCtrl", ["$scope", '$timeout', function ($scope, $timeout) {
     }, {
         title: "标题6",
         imageUrl: "../../img/6.jpg"
+    }, {
+        title: "标题7",
+        imageUrl: "../../img/7.jpg"
+    }, {
+        title: "标题8",
+        imageUrl: "../../img/8.jpg"
+    }, {
+        title: "标题9",
+        imageUrl: "../../img/9.jpg"
     }]
 
     $scope.name = "我的名字";
@@ -63,17 +44,29 @@ app.controller("indexCtrl", ["$scope", '$timeout', function ($scope, $timeout) {
     $scope.aaa = function () {
         if (aa === 0) {
             $scope.data = [{
+                title: "标题1",
+                imageUrl: "../../img/11.jpg"
+            }, {
+                title: "标题2",
+                imageUrl: "../../img/12.jpg"
+            }, {
+                title: "标题3",
+                imageUrl: "../../img/13.jpg"
+            }, {
+                title: "标题4",
+                imageUrl: "../../img/14.jpg"
+            }, {
+                title: "标题5",
+                imageUrl: "../../img/15.jpg"
+            }, {
+                title: "标题6",
+                imageUrl: "../../img/16.jpg"
+            }, {
                 title: "标题7",
-                imageUrl: "../../img/7.jpg"
+                imageUrl: "../../img/17.jpg"
             }, {
                 title: "标题8",
-                imageUrl: "../../img/8.jpg"
-            }, {
-                title: "标题9",
-                imageUrl: "../../img/9.jpg"
-            }, {
-                title: "标题10",
-                imageUrl: "../../img/10.jpg"
+                imageUrl: "../../img/18.jpg"
             }]
             aa = 1;
         }
@@ -96,6 +89,15 @@ app.controller("indexCtrl", ["$scope", '$timeout', function ($scope, $timeout) {
             }, {
                 title: "标题6",
                 imageUrl: "../../img/6.jpg"
+            }, {
+                title: "标题7",
+                imageUrl: "../../img/7.jpg"
+            }, {
+                title: "标题8",
+                imageUrl: "../../img/8.jpg"
+            }, {
+                title: "标题9",
+                imageUrl: "../../img/9.jpg"
             }]
 
             aa = 0;
