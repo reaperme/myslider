@@ -8,6 +8,7 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
      * */
     function mySlider(config) {
         this.timer;
+        this.myCallback = config.myCallback;
         this.change = config.change || false;
         this.size = config.scope.myData && config.scope.myData.length || 0;//滚动个数
         this.width = this.getWinSize().width;//默认滚动宽度为屏幕宽度
@@ -33,6 +34,11 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
             if (this.checkData.call(this)) {
                 this.initDots.call(this);
                 if (self.scope.myData.length > 1) {
+                    if (self.myCallback) {
+                        self.scope.$emit(self.myCallback, {
+                            index: 0
+                        })
+                    }
                     this.initLoop.call(this);
                     this.bindEvents.call(this, this.box);
                     this.play.call(this);
@@ -89,18 +95,13 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
                 }
             }).on('touchmove', function (e) {
                 self.hold = true;
-                //console.log("move:" + self.hold);
                 if (e.touches.length == 1 && !self.busy) {
                     return self.move(e.touches[0].screenX, e.touches[0].screenY, e);
                 }
             }).on('touchend', function (e) {
                 self.hold = false;
-                //console.log("end:" + self.hold);
                 !self.busy && self.move_end();
             });
-        },
-        switch:function(){
-            
         },
         /*
          * 自动播放
@@ -117,7 +118,6 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
          * 跳到指定索引页
          * */
         goIndex: function (index) {
-            //console.log(this.scope.mySlider);
             var self = this;
             if (self.hold || self.busy) return;
             $timeout.cancel(self.timer);
@@ -142,7 +142,6 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
                     self.complete(index);
                 }, self.scrollTime);
             }
-            //console.log(index)
             self.updateDotsStatus(index);
         },
         /*
@@ -174,11 +173,17 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
                 return false;
             }
             self.busy = false;
-            //self.config.callback && self.config.callback(self.index);
+
             if (index == -1) {
                 self.now_left = self.minleft;
             } else if (index == self.size) {
                 self.now_left = self.maxleft;
+            }
+
+            if (self.myCallback) {
+                self.scope.$emit(self.myCallback, {
+                    index: self.index
+                })
             }
             self.box.css(this.getStyle(2));
             self.play();
@@ -290,7 +295,7 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
         scope: {
             myData: '=',//数据源
             myInterval: "@",//滚动间隔
-            myChange: "&"//每切换一页的回调函数，回调函数接受一个索引值做为参数
+            myCallback: "&"//每切换一页的回调函数，回调函数接受一个索引值做为参数
         },
         transclude: true,
         controllerAs: "carouselCtrl",
@@ -301,16 +306,16 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
             }
         },
         template: '<div class="myslider-box">' +
-        '<ul class="myslider-ul" ng-transclude></ul>'+
+        '<ul class="myslider-ul" ng-transclude></ul>' +
         '<ol class="myslider-dots">' +
         '<li ng-repeat="item in dotData track by $index" ng-click = "mySlider.goIndex($index)" ng-class=\'{true:"active",false:""}[carouselCtrl.sliders[$index].isSelected]\'></li>' +
         '</ol>' +
         '</div>',
-        compile:function(){
-            return {  
-                pre: function (scope, elem, iAttrs) {  
-                    console.log(scope)
-                    var myInterval = iAttrs.myInterval;
+        compile: function () {
+            return {
+                pre: function (scope, elem, iAttrs) {
+                    var myInterval = iAttrs.myInterval,
+                        myCallback = iAttrs.myCallback || "";
                     scope.$watch('myData', function (newValue, oldValue) {
                         if (newValue !== oldValue) {//数据发生改变
                             $timeout.cancel(scope.mySlider.timer);
@@ -322,15 +327,15 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
                                 scope: scope,
                                 box: elem.find('ul'),
                                 playInterval: myInterval,
-                                change: false
+                                change: false,
+                                myCallback: myCallback
                             })
                         })
                     })
-                },  
-                post: function (scope, element, attributes) {  
-                    console.log(scope)
-                }  
-            };  
+                },
+                post: function (scope, element, attributes) {
+                }
+            };
         }
     };
 }]);
@@ -343,32 +348,24 @@ sliderApp.directive('mySlider', ["$compile", function ($compile) {
         template: '<li class="myslider-li" ng-transclude></li>',
         replace: true,
         transclude: true,
-        compile:function(){
-            console.log(122)
+        compile: function () {
             return {
-                pre:function (scope, elem, iAttrs, controller){
-                    var ngRepeat = iAttrs.ngRepeat;
-                    var repeatMatch = ngRepeat.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?\s*$/),
-                        repeatCollections = repeatMatch[2];
-                    scope.$parent['dataSource'] = repeatCollections;
+                pre: function (scope, elem, iAttrs, controller) {
+                    // var ngRepeat = iAttrs.ngRepeat;
+                    // var repeatMatch = ngRepeat.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?\s*$/),
+                    //     repeatCollections = repeatMatch[2];
+                    // scope.$parent['dataSource'] = repeatCollections;
                     scope.isSelected = false;
-                    
                     controller.addSlider(scope);
                     if (controller.sliders.length > 0) {
                         controller.sliders[0].isSelected = true;
-                        // angular.forEach(controller.sliders, function (item, index) {
-                        //     if (index == 0) {
-                        //         item.isSelected = true;
-                        //     }
-                        // })
                     }
-                },  
-                post: function (scope, elem, iAttrs, controller) {  
-                    // console.log(scope)
-                    
-                }  
+                },
+                post: function (scope, elem, iAttrs, controller) {
+
+                }
             }
         }
-        
+
     };
 }]);

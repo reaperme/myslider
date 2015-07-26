@@ -2,7 +2,9 @@
  * Created by Reeoo on 2015/7/12 0012.
  */
 app.controller("indexCtrl", ["$scope", '$timeout', function ($scope, $timeout) {
-
+    $scope.$on('bbb', function (event, data) {
+        console.log(data.index);
+    })
     var b = [{
         title: "标题1",
         imageUrl: "../../img/1.jpg"
@@ -59,42 +61,42 @@ app.controller("indexCtrl", ["$scope", '$timeout', function ($scope, $timeout) {
     var aa = 0;
 
     $scope.aaa = function () {
-            if (aa === 0) {
-                $scope.data = [{
-                    title: "标题1",
-                    imageUrl: "../../img/1.jpg"
-                }, {
-                    title: "标题4",
-                    imageUrl: "../../img/4.jpg"
-                }, {
-                    title: "标题5",
-                    imageUrl: "../../img/5.jpg"
-                }]
-                aa = 1;
-            }
-            else {
-                $scope.data = [{
-                    title: "标题1",
-                    imageUrl: "../../img/1.jpg"
-                }, {
-                    title: "标题2",
-                    imageUrl: "../../img/2.jpg"
-                }, {
-                    title: "标题3",
-                    imageUrl: "../../img/3.jpg"
-                }, {
-                    title: "标题4",
-                    imageUrl: "../../img/4.jpg"
-                }, {
-                    title: "标题5",
-                    imageUrl: "../../img/5.jpg"
-                }, {
-                    title: "标题6",
-                    imageUrl: "../../img/6.jpg"
-                }]
+        if (aa === 0) {
+            $scope.data = [{
+                title: "标题1",
+                imageUrl: "../../img/1.jpg"
+            }, {
+                title: "标题4",
+                imageUrl: "../../img/4.jpg"
+            }, {
+                title: "标题5",
+                imageUrl: "../../img/5.jpg"
+            }]
+            aa = 1;
+        }
+        else {
+            $scope.data = [{
+                title: "标题1",
+                imageUrl: "../../img/1.jpg"
+            }, {
+                title: "标题2",
+                imageUrl: "../../img/2.jpg"
+            }, {
+                title: "标题3",
+                imageUrl: "../../img/3.jpg"
+            }, {
+                title: "标题4",
+                imageUrl: "../../img/4.jpg"
+            }, {
+                title: "标题5",
+                imageUrl: "../../img/5.jpg"
+            }, {
+                title: "标题6",
+                imageUrl: "../../img/6.jpg"
+            }]
 
-                aa = 0;
-            }
+            aa = 0;
+        }
     }
 
     $scope.sizes = {
