@@ -1,105 +1,105 @@
-app.controller("indexCtrl", [
-    "$rootScope",
-    "$scope",
-    "$window",
-    "$state",
-    "$stateParams",
-    function ($rootScope, $scope, $window, $state, $stateParams) {
-        //$scope.text = "hello world!";
-        $scope.text1 = "hello world1!";
-        $scope.text2 = "hello world2!";
-        $scope.data = [{
-            name: "呵呵"
-        }, {
-            name: "尼玛"
-        }]
-        $scope.show = function (obj) {
-            console.log(obj)
-            //alert(obj.name.name)
-        }
-        //$scope.title = "标题";
-        //$scope.contents = [{text: 1234}, {text: 5678}];
-        //$scope.showName = function () {
-        //    console.log(111)
-        //}
-    }
-])
-
-
 /**
- * Created by sc09395 on 2014/10/14 0014.
+ * Created by Reeoo on 2015/7/12 0012.
  */
-app.directive("myTest", function () {
-    return {
-        restrict: 'AE',
-        replace: true,
-        scope: {
-            text: "@",
-            data: "=a",
-            myFn: '&'
-        },
-        template: '<div ng-click="myFn()">hello {{text}}  1 {{data.name}}</div>',
-        link: function ($scope, $elem, $attr) {
-            //console.log($elem)
-            //console.log($attr);
-            //console.log($scope.text);
-            //$scope.text = "尼玛";
-            //console.log($scope.data);
-            //$scope.data = {
-            //    name: '呵呵呵'
-            //}
-        }
-    }
-})
+app.controller("indexCtrl", ["$scope", '$timeout', function ($scope, $timeout) {
+
+    var b = [{
+        title: "标题1",
+        imageUrl: "../../img/1.jpg"
+    }, {
+        title: "标题2",
+        imageUrl: "../../img/2.jpg"
+    }, {
+        title: "标题3",
+        imageUrl: "../../img/3.jpg"
+    }, {
+        title: "标题4",
+        imageUrl: "../../img/4.jpg"
+    }, {
+        title: "标题5",
+        imageUrl: "../../img/5.jpg"
+    }, {
+        title: "标题6",
+        imageUrl: "../../img/6.jpg"
+    }]
 
 
-app.directive("direct", function () {
-    return {
-        restrict: 'ECMA',
-        template: '<div>{{ title }}</div>' +
-        '<div><ul><li ng-repeat="x in contents">{{ x.text }}</li></ul></div>',
-        scope: {
-            getTitle: '&',
-            getContent: '&',
-            show: '&showName'
-        },
-        controller: function ($scope) {
-            $scope.title = $scope.getTitle();    //调用无参函数
-            $scope.contents = $scope.getContent();    //调用无参函数
-        }
-    }
-})
+    var a = [{
+        title: "标题1",
+        imageUrl: "../../img/1.jpg"
+    }, {
+        title: "标题2",
+        imageUrl: "../../img/2.jpg"
+    }]
 
-app.controller("sliderCtrl", [
-    "$rootScope",
-    "$scope",
-    function ($rootScope, $scope) {
-        $scope.text = "hello world!";
-        $scope.data = [{
-            name: "呵呵"
-        }, {
-            name: "尼玛"
-        }]
+    $scope.data = [{
+        title: "标题1",
+        imageUrl: "../../img/1.jpg"
+    }, {
+        title: "标题2",
+        imageUrl: "../../img/2.jpg"
+    }, {
+        title: "标题3",
+        imageUrl: "../../img/3.jpg"
+    }, {
+        title: "标题4",
+        imageUrl: "../../img/4.jpg"
+    }, {
+        title: "标题5",
+        imageUrl: "../../img/5.jpg"
+    }, {
+        title: "标题6",
+        imageUrl: "../../img/6.jpg"
+    }]
 
-        $scope.da = [{
-            img: "../../img/1.jpg"
-        }, {
-            img: "../../img/2.jpg"
-        }, {
-            img: "../../img/3.jpg"
-        }]
+    $scope.name = "我的名字";
+
+    //$scope.data = b;
+
+    var aa = 0;
+
+    $scope.aaa = function () {
+            if (aa === 0) {
+                $scope.data = [{
+                    title: "标题1",
+                    imageUrl: "../../img/1.jpg"
+                }, {
+                    title: "标题4",
+                    imageUrl: "../../img/4.jpg"
+                }, {
+                    title: "标题5",
+                    imageUrl: "../../img/5.jpg"
+                }]
+                aa = 1;
+            }
+            else {
+                $scope.data = [{
+                    title: "标题1",
+                    imageUrl: "../../img/1.jpg"
+                }, {
+                    title: "标题2",
+                    imageUrl: "../../img/2.jpg"
+                }, {
+                    title: "标题3",
+                    imageUrl: "../../img/3.jpg"
+                }, {
+                    title: "标题4",
+                    imageUrl: "../../img/4.jpg"
+                }, {
+                    title: "标题5",
+                    imageUrl: "../../img/5.jpg"
+                }, {
+                    title: "标题6",
+                    imageUrl: "../../img/6.jpg"
+                }]
+
+                aa = 0;
+            }
     }
-]).directive("slider", function () {
-    return {
-        restrict: "E",
-        replace: true,
-        transclude: true,
-        scope: {
-            data: "="
-        },
-        templateUrl: 'views/slider.html',
-        link: function ($scope, $elem, $attr) {
-            console.log(111)
-        }
+
+    $scope.sizes = {
+        width: document.body.clientWidth + "px",
+        display: "block",
+        height: 3 * document.body.clientWidth / 4 + "px"
     }
-})
+}])

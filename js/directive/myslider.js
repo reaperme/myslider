@@ -1,8 +1,8 @@
 /**
- * Created by sc09395 on 2015/7/13 0013.
+ * Created by Reeoo on 2015/7/13 0013.
  */
-var _myApp = angular.module("_myApp", []);
-_myApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', function ($rootScope, $timeout, $compile) {
+var sliderApp = angular.module("sliderApp", []);
+sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', function ($rootScope, $timeout, $compile) {
     /*
      * playInterval : 自动播放间隔
      * */
@@ -324,7 +324,7 @@ _myApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', function (
     };
 }]);
 
-_myApp.directive('mySlider', ["$compile", function ($compile) {
+sliderApp.directive('mySlider', ["$compile", function ($compile) {
     return {
         scope: {},
         require: '^?myCarousel',
