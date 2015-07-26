@@ -3,9 +3,6 @@
  */
 var sliderApp = angular.module("sliderApp", []);
 sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', function ($rootScope, $timeout, $compile) {
-    /*
-     * playInterval : 自动播放间隔
-     * */
     function mySlider(config) {
         this.timer;
         this.myCallback = config.myCallback;
@@ -295,7 +292,7 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
         scope: {
             myData: '=',//数据源
             myInterval: "@",//滚动间隔
-            myCallback: "&"//每切换一页的回调函数，回调函数接受一个索引值做为参数
+            myCallback: "@"//每切换一页的回调函数名（字符串），回调函数接受一个索引值做为参数
         },
         transclude: true,
         controllerAs: "carouselCtrl",
