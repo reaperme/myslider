@@ -254,6 +254,8 @@ _myApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', function (
             return {
                 '-webkit-transition': '-webkit-transform ' + time + 'ms',
                 'transition': 'transform ' + time + 'ms',
+                '-webkit-transform-style': 'preserve-3d',
+                'transform-style': 'preserve-3d',
                 '-webkit-backface-visibility': 'hidden',
                 'backface-visibility': 'hidden',
                 '-webkit-transform': 'translate3d(' + x + 'px,0,0)',
