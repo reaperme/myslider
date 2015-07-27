@@ -33,13 +33,16 @@
     width: 8px;
     height: 8px;
     background: url(../img/dot.png) no-repeat 0 0;
+    -o-background-size: 8px 8px;
+    -moz-background-size: 8px 8px;
     -webkit-background-size: 8px 8px;
-    background-size: 8px 8px;
     margin-right: 10px;
 }
 
 .myslider-box .myslider-dots li.active {
     background: url(../img/dot-active.png) no-repeat 0 0;
+    -o-background-size: 8px 8px;
+    -moz-background-size: 8px 8px;
     -webkit-background-size: 8px 8px;
     background-size: 8px 8px;
 }
