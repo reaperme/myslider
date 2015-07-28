@@ -3,7 +3,8 @@
  */
 app.controller("indexCtrl", ["$scope", '$timeout', function ($scope, $timeout) {
     $scope.$on('bbb', function (event, data) {
-        console.log(data.index);
+        //console.log(event);
+        //console.log(data.index);
     })
 
     $scope.data = [{

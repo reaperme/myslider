@@ -85,18 +85,16 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
         bindEvents: function (elem) {
             var self = this;
             elem.off().on('touchstart', function (e) {
-                if (e.touches.length == 1 && !self.busy) {
+                self.hold = true;
+                if (!self.busy) {
                     self.point_x = e.touches[0].screenX;
-                    self.point_y = e.touches[0].screenY;
-                    self.hold = true;
                 }
             }).on('touchmove', function (e) {
-                self.hold = true;
-                if (e.touches.length == 1 && !self.busy) {
-                    return self.move(e.touches[0].screenX, e.touches[0].screenY, e);
+
+                if (!self.busy) {
+                    return self.move(e.touches[0].screenX,  e);
                 }
             }).on('touchend', function (e) {
-                self.hold = false;
                 !self.busy && self.move_end();
             });
         },
@@ -178,9 +176,7 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
             }
 
             if (self.myCallback) {
-                self.scope.$emit(self.myCallback, {
-                    index: self.index
-                })
+                self.scope.$emit(self.myCallback, index)
             }
             self.box.css(this.getStyle(2));
             self.play();
@@ -204,21 +200,19 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
         /*
          * 滑动屏幕处理函数
          * */
-        move: function (point_x, point_y, e) {
+        move: function (point_x, e) {
             e.preventDefault();
+            self.hold = true;
             var changeX = point_x - (this.point_x === null ? point_x : this.point_x),
-                changeY = point_y - (this.point_y === null ? point_y : this.point_y),
-                marginleft = this.now_left, return_value = false,
-                sin = changeY / Math.sqrt(changeX * changeX + changeY * changeY);
+                marginleft = this.now_left;
             this.now_left = marginleft + changeX;
+            console.log("point_x:" +　point_x);
+            console.log("this.point_x:" +　this.point_x);
             this.move_left = changeX < 0;
-            if (sin > Math.sin(Math.PI / 3) || sin < -Math.sin(Math.PI / 3)) {//滑动屏幕角度范围：PI/3  -- 2PI/3
-                return_value = true;//不阻止默认行为
-            }
+            console.log(this.move_left)
             this.point_x = point_x;
-            this.point_y = point_y;
             this.box.css(this.getStyle(2));
-            return return_value;
+
         },
         /*
          * 滑动屏幕结束处理函数
@@ -240,7 +234,8 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
             } else {
                 ind = this.index;
             }
-            this.point_x = this.point_y = null;
+            console.log(ind);
+            this.point_x = null;
             this.goIndex(ind);
         },
         /*
