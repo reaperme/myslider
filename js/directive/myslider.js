@@ -2,7 +2,7 @@
  * Created by Reeoo on 2015/7/13 0013.
  */
 var sliderApp = angular.module("sliderApp", []);
-sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', function ($rootScope, $timeout, $compile) {
+sliderApp.service('sliderSrv', ['$timeout', function ($timeout) {
     function mySlider(config) {
         this.timer;
         this.myCallback = config.myCallback;
@@ -28,7 +28,9 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
         constructor: mySlider,
         init: function () {
             var self = this;
+
             if (this.checkData.call(this)) {
+
                 this.initDots.call(this);
                 if (self.scope.myData.length > 1) {
                     if (self.myCallback) {
@@ -40,6 +42,7 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
                     this.bindEvents.call(this, this.box);
                     this.play.call(this);
                 }
+
             }
         },
         checkData: function () {
@@ -76,8 +79,12 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
             this.minleft = -self.width * self.size;//最小left值
             this.maxleft = -self.width;
 
-            this.box.parent().css("width", self.width + "px");
+            this.box.parent().css({
+                "width": self.width + "px"
+            });
             this.box.css("width", (self.size + 2) * self.width + "px").css(self.getStyle(2));
+
+
         },
         /*
          * 绑定事件
@@ -85,16 +92,18 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
         bindEvents: function (elem) {
             var self = this;
             elem.off().on('touchstart', function (e) {
-                self.hold = true;
-                if (!self.busy) {
+                if (e.touches.length == 1 && !self.busy) {
                     self.point_x = e.touches[0].screenX;
+                    self.point_y = e.touches[0].screenY;
+                    self.hold = true;
                 }
             }).on('touchmove', function (e) {
-
-                if (!self.busy) {
-                    return self.move(e.touches[0].screenX,  e);
+                self.hold = true;
+                if (e.touches.length == 1 && !self.busy) {
+                    return self.move(e.touches[0].screenX, e.touches[0].screenY, e);
                 }
             }).on('touchend', function (e) {
+                self.hold = false;
                 !self.busy && self.move_end();
             });
         },
@@ -176,7 +185,9 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
             }
 
             if (self.myCallback) {
-                self.scope.$emit(self.myCallback, index)
+                self.scope.$emit(self.myCallback, {
+                    index: self.index
+                })
             }
             self.box.css(this.getStyle(2));
             self.play();
@@ -200,19 +211,21 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
         /*
          * 滑动屏幕处理函数
          * */
-        move: function (point_x, e) {
+        move: function (point_x, point_y, e) {
             e.preventDefault();
-            self.hold = true;
             var changeX = point_x - (this.point_x === null ? point_x : this.point_x),
-                marginleft = this.now_left;
+                changeY = point_y - (this.point_y === null ? point_y : this.point_y),
+                marginleft = this.now_left, return_value = false,
+                sin = changeY / Math.sqrt(changeX * changeX + changeY * changeY);
             this.now_left = marginleft + changeX;
-            console.log("point_x:" +　point_x);
-            console.log("this.point_x:" +　this.point_x);
             this.move_left = changeX < 0;
-            console.log(this.move_left)
+            if (sin > Math.sin(Math.PI / 3) || sin < -Math.sin(Math.PI / 3)) {//滑动屏幕角度范围：PI/3  -- 2PI/3
+                return_value = true;//不阻止默认行为
+            }
             this.point_x = point_x;
+            this.point_y = point_y;
             this.box.css(this.getStyle(2));
-
+            return return_value;
         },
         /*
          * 滑动屏幕结束处理函数
@@ -234,8 +247,7 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
             } else {
                 ind = this.index;
             }
-            console.log(ind);
-            this.point_x = null;
+            this.point_x = this.point_y = null;
             this.goIndex(ind);
         },
         /*
@@ -282,7 +294,9 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
             }
         }
     }
-
+    return mySlider;
+}])
+sliderApp.directive('myCarousel', ['$rootScope', '$timeout', 'sliderSrv', '$compile', function ($rootScope, $timeout, sliderSrv, $compile) {
     return {
         restrict: 'E',
         replace: true,
@@ -311,21 +325,24 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', '$compile', functio
                     var myInterval = iAttrs.myInterval,
                         myCallback = iAttrs.myCallback || "";
                     scope.$watch('myData', function (newValue, oldValue) {
-                        if (newValue !== oldValue) {//数据发生改变
+                        if (newValue !== oldValue && oldValue) {//数据发生改变
                             $timeout.cancel(scope.mySlider.timer);
                             scope.mySlider.change = true;
                             scope.carouselCtrl.sliders = [];//清空dots
                         }
-                        $timeout(function () {
-                            scope.mySlider = new mySlider({
-                                scope: scope,
-                                box: elem.find('ul'),
-                                playInterval: myInterval,
-                                change: false,
-                                myCallback: myCallback
-                            })
+
+                        scope.mySlider = new sliderSrv({
+                            scope: scope,
+                            box: elem.find('ul'),
+                            playInterval: myInterval,
+                            change: false,
+                            myCallback: myCallback
                         })
+
                     })
+                    scope.$on('$destroy', function () {
+                        $timeout.cancel(scope.mySlider.timer);
+                    });
                 },
                 post: function (scope, element, attributes) {
                 }
@@ -345,10 +362,6 @@ sliderApp.directive('mySlider', ["$compile", function ($compile) {
         compile: function () {
             return {
                 pre: function (scope, elem, iAttrs, controller) {
-                    // var ngRepeat = iAttrs.ngRepeat;
-                    // var repeatMatch = ngRepeat.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?\s*$/),
-                    //     repeatCollections = repeatMatch[2];
-                    // scope.$parent['dataSource'] = repeatCollections;
                     scope.isSelected = false;
                     controller.addSlider(scope);
                     if (controller.sliders.length > 0) {
