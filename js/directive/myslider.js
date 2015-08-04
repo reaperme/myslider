@@ -7,6 +7,7 @@ sliderApp.service('sliderSrv', ['$timeout', function ($timeout) {
         this.timer;
         this.myCallback = config.myCallback;
         this.change = config.change || false;
+        this.autoPlay = config.autoPlay;
         this.size = config.scope.myData && config.scope.myData.length || 0;//滚动个数
         this.width = this.getWinSize().width;//默认滚动宽度为屏幕宽度
         this.minleft = -this.width * (this.size + 1);//最小left值，注意是负数[不循环情况下的值]
@@ -14,7 +15,7 @@ sliderApp.service('sliderSrv', ['$timeout', function ($timeout) {
         this.now_left = 0;//初始位置信息[不循环情况下的值]
         this.point_x = null;//记录一个x坐标
         this.point_y = null;//记录一个y坐标
-        this.index = 0;//开始索引
+        this.index = +config.index || 0;//开始索引
         this.busy = false;//是否在运动
         this.playInterval = config.playInterval || 3000;//动画间隔
         this.scrollTime = 500;//动画时间
@@ -40,7 +41,9 @@ sliderApp.service('sliderSrv', ['$timeout', function ($timeout) {
                     }
                     this.initLoop.call(this);
                     this.bindEvents.call(this, this.box);
-                    this.play.call(this);
+                    if (self.autoPlay) {
+                        this.play.call(this);
+                    }
                 }
 
             }
@@ -75,10 +78,10 @@ sliderApp.service('sliderSrv', ['$timeout', function ($timeout) {
             self.scope.myData.unshift(angular.fromJson(last));
             self.scope.myData.push(angular.fromJson(fst));
 
-            this.now_left = -self.width;//设置初始位置信息
+            this.now_left = -self.width * (self.index + 1);//设置初始位置信息
             this.minleft = -self.width * self.size;//最小left值
             this.maxleft = -self.width;
-
+            this.updateDotsStatus(self.index);
             this.box.parent().css({
                 "width": self.width + "px"
             });
@@ -122,6 +125,7 @@ sliderApp.service('sliderSrv', ['$timeout', function ($timeout) {
          * 跳到指定索引页
          * */
         goIndex: function (index) {
+            index = +index;
             var self = this;
             if (self.hold || self.busy) return;
             $timeout.cancel(self.timer);
@@ -190,7 +194,9 @@ sliderApp.service('sliderSrv', ['$timeout', function ($timeout) {
                 })
             }
             self.box.css(this.getStyle(2));
-            self.play();
+            if (self.autoPlay) {
+                self.play();
+            }
         },
         /*
          * 滚到下一页
@@ -303,7 +309,9 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', 'sliderSrv', '$comp
         scope: {
             myData: '=',//数据源
             myInterval: "@",//滚动间隔
-            myCallback: "@"//每切换一页的回调函数名（字符串），回调函数接受一个索引值做为参数
+            myCallback: "@",//每切换一页的回调函数名（字符串），回调函数接受一个索引值做为参数
+            index: "@",//初始化索引
+            auto: '@'
         },
         transclude: true,
         controllerAs: "carouselCtrl",
@@ -321,9 +329,11 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', 'sliderSrv', '$comp
         '</div>',
         compile: function () {
             return {
-                pre: function (scope, elem, iAttrs) {
-                    var myInterval = iAttrs.myInterval,
-                        myCallback = iAttrs.myCallback || "";
+                pre: function (scope, elem, attrs) {
+                    var myInterval = attrs.myInterval,
+                        myCallback = attrs.myCallback || "",
+                        index = attrs.index,
+                        isAuto = attrs.hasOwnProperty('auto');
                     scope.$watch('myData', function (newValue, oldValue) {
                         if (newValue !== oldValue && oldValue) {//数据发生改变
                             $timeout.cancel(scope.mySlider.timer);
@@ -336,10 +346,21 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', 'sliderSrv', '$comp
                             box: elem.find('ul'),
                             playInterval: myInterval,
                             change: false,
-                            myCallback: myCallback
+                            myCallback: myCallback,
+                            index: index,
+                            autoPlay: isAuto
                         })
 
                     })
+
+
+                    scope.$watch('index', function (newValue, oldValue) {
+                        if (newValue !== oldValue && oldValue) {//数据发生改变
+                            scope.mySlider.goIndex(newValue);
+                        }
+                    })
+
+
                     scope.$on('$destroy', function () {
                         $timeout.cancel(scope.mySlider.timer);
                     });
@@ -361,14 +382,12 @@ sliderApp.directive('mySlider', ["$compile", function ($compile) {
         transclude: true,
         compile: function () {
             return {
-                pre: function (scope, elem, iAttrs, controller) {
+                pre: function (scope, elem, attrs, controller) {
                     scope.isSelected = false;
+                    console.log(scope);
                     controller.addSlider(scope);
-                    if (controller.sliders.length > 0) {
-                        controller.sliders[0].isSelected = true;
-                    }
                 },
-                post: function (scope, elem, iAttrs, controller) {
+                post: function (scope, elem, attrs, controller) {
 
                 }
             }
