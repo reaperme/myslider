@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Created by Reeoo on 2015/7/13 0013.
  */
 var sliderApp = angular.module("sliderApp", []);
@@ -22,6 +22,8 @@ sliderApp.service('sliderSrv', ['$timeout', function ($timeout) {
         this.scope = config.scope;//作用域
         this.box = config.box;//滚动盒子
         this.hold = false;//手指hold住的时候停止play()运行
+        this.dot = config.dot || false;
+        this.showIndex = config.showIndex || false;
         this.init();//初始化
     }
 
@@ -31,21 +33,30 @@ sliderApp.service('sliderSrv', ['$timeout', function ($timeout) {
             var self = this;
 
             if (this.checkData.call(this)) {
-
                 this.initDots.call(this);
+                self.scope.hasDot = self.dot;
+                self.scope.indexShow = self.showIndex;
                 if (self.scope.myData.length > 1) {
-                    if (self.myCallback) {
-                        self.scope.$emit(self.myCallback, {
-                            index: 0
-                        })
-                    }
                     this.initLoop.call(this);
                     this.bindEvents.call(this, this.box);
                     if (self.autoPlay) {
                         this.play.call(this);
                     }
                 }
+                else {
+                    self.updateStatus(0);
+                }
 
+                if(self.scope.myData.length === 1){
+                    this.box.css("transform", "translate3d(0,0,0)");
+                    this.box.off();
+                }
+
+                if (self.myCallback) {
+                    self.scope.$emit(self.myCallback, {
+                        index: 0
+                    })
+                }
             }
         },
         checkData: function () {
@@ -81,7 +92,7 @@ sliderApp.service('sliderSrv', ['$timeout', function ($timeout) {
             this.now_left = -self.width * (self.index + 1);//设置初始位置信息
             this.minleft = -self.width * self.size;//最小left值
             this.maxleft = -self.width;
-            this.updateDotsStatus(self.index);
+            this.updateStatus(self.index);
             this.box.parent().css({
                 "width": self.width + "px"
             });
@@ -150,27 +161,44 @@ sliderApp.service('sliderSrv', ['$timeout', function ($timeout) {
                     self.complete(index);
                 }, self.scrollTime);
             }
-            self.updateDotsStatus(index);
+            self.updateStatus(index);
         },
         /*
-         * 更新dots状态
+         * 更新状态
          * */
-        updateDotsStatus: function (index) {
+        updateStatus: function (index) {
             var self = this;
-            $timeout(function () {
-                angular.forEach(self.scope['carouselCtrl'].sliders, function (item, index) {
-                    item.isSelected = false;
+            var dot = self.dot,
+                showIndex = self.showIndex;
+            if (dot) {
+                $timeout(function () {
+                    angular.forEach(self.scope['carouselCtrl'].sliders, function (item, index) {
+                        item.isSelected = false;
+                    })
+                    if (index >= self.size) {
+                        self.scope['carouselCtrl'].sliders[0].isSelected = true;
+                    }
+                    else if (index < 0) {
+                        self.scope['carouselCtrl'].sliders[self.size - 1].isSelected = true;
+                    }
+                    else {
+                        self.scope['carouselCtrl'].sliders[index].isSelected = true;
+                    }
                 })
-                if (index >= self.size) {
-                    self.scope['carouselCtrl'].sliders[0].isSelected = true;
-                }
-                else if (index < 0) {
-                    self.scope['carouselCtrl'].sliders[self.size - 1].isSelected = true;
-                }
-                else {
-                    self.scope['carouselCtrl'].sliders[index].isSelected = true;
-                }
-            })
+            }
+            if (showIndex) {
+                $timeout(function () {
+                    if (index >= self.size) {
+                        self.scope.selectedIndex = 1;
+                    }
+                    else if (index < 0) {
+                        self.scope.selectedIndex = self.size;
+                    }
+                    else {
+                        self.scope.selectedIndex = index + 1;
+                    }
+                })
+            }
         },
         /*
          * 动画完成回调
@@ -311,7 +339,9 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', 'sliderSrv', '$comp
             myInterval: "@",//滚动间隔
             myCallback: "@",//每切换一页的回调函数名（字符串），回调函数接受一个索引值做为参数
             index: "@",//初始化索引
-            auto: '@'
+            auto: '@',//是否自动播放 有auto属性自动播放，没有不自动播放
+            dot: '@',//是否显示圆点，有dot属性显示圆点，没有不显示
+            showIndex: '@'//是否显示索引，有showIndex显示，没有不显示
         },
         transclude: true,
         controllerAs: "carouselCtrl",
@@ -323,9 +353,11 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', 'sliderSrv', '$comp
         },
         template: '<div class="myslider-box">' +
         '<ul class="myslider-ul" ng-transclude></ul>' +
-        '<ol class="myslider-dots">' +
+        '<ol class="myslider-dots" ng-if="hasDot">' +
         '<li ng-repeat="item in dotData track by $index" ng-click = "mySlider.goIndex($index)" ng-class=\'{true:"active",false:""}[carouselCtrl.sliders[$index].isSelected]\'></li>' +
         '</ol>' +
+        '<span>{{carouselCtrl.sliders.length}}</span>'+
+        '<div class="numRadius" ng-if="indexShow"><span ng-bind="selectedIndex"></span><span>/</span><span ng-bind="dotData.length"></span></div>' +
         '</div>',
         compile: function () {
             return {
@@ -333,16 +365,19 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', 'sliderSrv', '$comp
                     var myInterval = attrs.myInterval,
                         myCallback = attrs.myCallback || "",
                         index = attrs.index,
-                        isAuto = attrs.hasOwnProperty('auto');
+                        isAuto = attrs.hasOwnProperty('auto'),
+                        dot = attrs.hasOwnProperty('dot'),
+                        showIndex = attrs.hasOwnProperty('showIndex');
                     scope.$watch('myData', function (newValue, oldValue) {
                         if (newValue !== oldValue && oldValue) {//数据发生改变
                             $timeout.cancel(scope.mySlider.timer);
                             scope.mySlider.change = true;
                             scope.carouselCtrl.sliders = [];//清空dots
                         }
-
                         scope.mySlider = new sliderSrv({
                             scope: scope,
+                            dot: dot,
+                            showIndex: showIndex,
                             box: elem.find('ul'),
                             playInterval: myInterval,
                             change: false,
@@ -384,7 +419,6 @@ sliderApp.directive('mySlider', ["$compile", function ($compile) {
             return {
                 pre: function (scope, elem, attrs, controller) {
                     scope.isSelected = false;
-                    console.log(scope);
                     controller.addSlider(scope);
                 },
                 post: function (scope, elem, attrs, controller) {

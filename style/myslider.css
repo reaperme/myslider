@@ -1,8 +1,4 @@
-* {
-    margin:0;
-    padding:0;
-}
-
+/*sc de slider*/
 .myslider-box {
     width: 100%;
     overflow: hidden;
@@ -23,7 +19,7 @@
 .myslider-box .myslider-dots {
     position: absolute;
     width: 100%;
-    bottom: 10px;
+    bottom: 2px;
     text-align: center;
     z-index: 999;
 }
@@ -33,20 +29,36 @@
     width: 8px;
     height: 8px;
     background: url(../img/dot.png) no-repeat 0 0;
-    -o-background-size: 8px 8px;
-    -moz-background-size: 8px 8px;
     -webkit-background-size: 8px 8px;
+    background-size: 8px 8px;
     margin-right: 10px;
 }
 
 .myslider-box .myslider-dots li.active {
     background: url(../img/dot-active.png) no-repeat 0 0;
-    -o-background-size: 8px 8px;
-    -moz-background-size: 8px 8px;
     -webkit-background-size: 8px 8px;
     background-size: 8px 8px;
 }
 
 .myslider-box .myslider-dots li:last-child {
     margin-right: 0;
+}
+.myslider-box .numRadius{
+    position:absolute;
+    top:10px;
+    right:10px;
+    color:#b5bac3;
+    height:40px;
+    width:40px;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+    background: #1c375c;
+    line-height: 40px;
+    text-align: center;
+    font-size: 20px;
+    font-family: Arial;
+}
+.myslider-box .numRadius span:first-child{
+    color:#fff;
+    font-family: Arial;
 }
