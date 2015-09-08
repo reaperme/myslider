@@ -10,7 +10,7 @@
 2. 在`html`页面中加入如下代码：
 
   ```
-<my-carousel ng-style="sizes" my-data="data" my-interval="3000" my-callback="bbb">
+<my-carousel ng-style="sizes" my-data="data" my-interval="3000" my-callback="bbb" auto dot>
   <my-slider ng-repeat="item in data">
       <a ng-style="sizes">
           <img ng-src="{{item.imageUrl}}" width="{{sizes.width}}" height="{{sizes.height}}"/>
@@ -31,6 +31,9 @@
 
   图片的宽高可以根据屏幕的宽度以及图片自身的比例来计算。一般图片的宽度等于屏幕的宽度~
 
+  `dot`属性是控制圆点的显示，加入这个属性就是显示圆点，不管这个属性的值是什么
+  `auto`属性控制是否自动轮播，有这个属性则自动轮播，没有则不自动轮播
+
 3. 在声明`app`的时候，把`sliderApp`加入依赖列表，像这样：
 
   ```
@@ -46,6 +49,8 @@ var app = angular.module("app", [
 前往[demo地址](http://codeyoo.com/demos/myslider/main.html#/index)可以在线测试 ^_^
 
 ![demo在线预览](http://img.codeyoo.com/myslider/preview.jpg)
+
+在线测试预览已经不可用，请自行下载并测试~
 
 #优化
 这只是个初版，后续会继续优化
