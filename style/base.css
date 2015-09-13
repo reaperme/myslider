@@ -1,0 +1,242 @@
+* {
+    border: 0;
+    outline: 0;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    -webkit-text-size-adjust:none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+}
+input, textarea {
+    -webkit-touch-callout: inherit;
+    -webkit-user-select: text;
+}
+body {
+    background-color:#f2f4f7;
+    overflow-x:hidden;
+    font-family: DroidSans,Heiti SC;
+    font-size: 12px;
+}
+ul {
+    list-style:none;
+}
+a {
+    text-decoration:none !important;
+    outline:none;
+}
+a:hover, a:active {
+    outline: none;
+}
+em {
+    font-style: normal;
+}
+img {
+    border: 0 none;
+    vertical-align:middle;
+    width:100%;
+}
+:focus {
+    outline: 0;
+}
+.clearfix:after {
+    visibility: hidden;
+    display: block;
+    font-size: 0;
+    content: " ";
+    clear: both;
+    height: 0;
+}
+
+/* loading */
+.global_loading_mask {
+    z-index:99999;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background: rgba(0, 0, 0, 0.2);
+    width: 100%;
+    height: 100%;
+}
+
+.global_loading_content {
+    height: 55px;
+    width: 140px;
+    left: 50%;
+    top: 50%;
+    margin-top: -30px;
+    margin-left: -70px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    position: fixed;
+    z-index: 99999999;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.global_loading_content .left_icon {
+    background: url(../img/anim_loading_toast.gif) no-repeat 12px center;
+    width: 50px;
+    height: 55px;
+    background-size: 36px 36px;
+    float: left;
+}
+
+.global_loading_content .content {
+    float: left;
+    color: #fff;
+    height: 55px;
+    width: 80px;
+    line-height: 55px;
+    text-align: center;
+}
+
+.global_loading_content .right_icon {
+    float: right;
+    width: 50px;
+    height: 55px;
+    background: url(../img/btn_loading_toast_close@3x.png) no-repeat 17px center;
+    background-size: 15px 15px;
+}
+/*
+    无网络页面样式开始----------------------
+*/
+.error_net{
+    width:100%;
+    height:100%;
+}
+
+.error_net .error_net_content_wrap{
+}
+.error_net .melt{
+    background: url(../img/icon_no_result_melt@2x.png) no-repeat;
+}
+.error_net .network{
+    background: url(../img/icon_no_result_network@2x.png) no-repeat;
+}
+
+.error_net .error_net_icon{
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    background-size: 100px 100px;
+    margin-left: -50px;
+    top: 28%;
+    left: 50%;
+}
+.error_net .error_net_text{
+    width: 100%;
+    position: absolute;
+    margin-top: 117px;
+    top: 28%;
+    color: #c0c5d0;
+    font-size: 16px;
+}
+
+.error_net .error_net_detail{
+    width: 100%;
+    text-align: center;
+    text-shadow: rgba(255,255,255,0.4) 0px 1px;
+}
+.error_net .error_net_button {
+    text-align: center;
+    border-radius: 8px;
+    line-height: 46px;
+    background: #fff;
+    background-clip: padding-box;
+    border: #dcdcdc solid 1px;
+    margin: 22px 6px;
+    font-size: 18px;
+    color: #666;
+    width: 66%;
+    margin-left: -33%;
+    left: 50%;
+    position: absolute;
+}
+.ng-cloak {
+    display: none;
+}
+/*
+    小鱼样式开始----------------------
+*/
+.loadingbg{
+    background-color:#f2f4f7;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 99999;
+}
+.loading
+{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    width: 71px;
+    height: 71px;
+    margin: -33px 0 0 -33px;
+}
+.loadingimg
+{
+    display: block;
+
+    width: 66px;
+    height: 66px;
+    margin: 0 auto;
+}
+.loading .loading_text
+{
+    font-size: 14px;
+
+    margin-top: 12px;
+
+    text-align: center;
+
+    color: #999;
+}
+/*sc de slider*/
+.myslider-box {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.myslider-box .myslider-ul {
+    position: absolute;
+    left: 0;
+    clear: both;
+    list-style: none;
+}
+
+.myslider-box .myslider-ul .myslider-li {
+    float: left
+}
+
+.myslider-box .myslider-dots {
+    position: absolute;
+    width: 100%;
+    bottom: 2px;
+    text-align: center;
+    z-index: 999;
+}
+
+.myslider-box .myslider-dots li {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: url(../img/dot.png) no-repeat 0 0;
+    -webkit-background-size: 8px 8px;
+    background-size: 8px 8px;
+    margin-right: 10px;
+}
+
+.myslider-box .myslider-dots li.active {
+    background: url(../img/dot-active.png) no-repeat 0 0;
+    -webkit-background-size: 8px 8px;
+    background-size: 8px 8px;
+}
+
+.myslider-box .myslider-dots li:last-child {
+    margin-right: 0;
+}

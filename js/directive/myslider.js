@@ -31,7 +31,9 @@ sliderApp.service('sliderSrv', ['$timeout', function ($timeout) {
         constructor: mySlider,
         init: function () {
             var self = this;
-
+            if  (self.index > self.size - 1 || self.index < 0) {
+                self.index = 0;
+            }
             if (this.checkData.call(this)) {
                 this.initDots.call(this);
                 self.scope.hasDot = self.dot;
