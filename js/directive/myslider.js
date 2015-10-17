@@ -1,4 +1,4 @@
-﻿/**
+﻿﻿/**
  * Created by Reeoo on 2015/7/13 0013.
  */
 var sliderApp = angular.module("sliderApp", []);
@@ -31,7 +31,9 @@ sliderApp.service('sliderSrv', ['$timeout', function ($timeout) {
         constructor: mySlider,
         init: function () {
             var self = this;
-
+            if  (self.index > self.size - 1 || self.index < 0) {
+                self.index = 0;
+            }
             if (this.checkData.call(this)) {
                 this.initDots.call(this);
                 self.scope.hasDot = self.dot;
@@ -136,6 +138,9 @@ sliderApp.service('sliderSrv', ['$timeout', function ($timeout) {
          * 跳到指定索引页
          * */
         goIndex: function (index) {
+            if(this.scope.dotData.length == 1){//只有一条数据
+                return false;
+            }
             index = +index;
             var self = this;
             if (self.hold || self.busy) return;
