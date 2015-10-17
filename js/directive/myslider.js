@@ -361,7 +361,6 @@ sliderApp.directive('myCarousel', ['$rootScope', '$timeout', 'sliderSrv', '$comp
         '<ol class="myslider-dots" ng-if="hasDot">' +
         '<li ng-repeat="item in dotData track by $index" ng-click = "mySlider.goIndex($index)" ng-class=\'{true:"active",false:""}[carouselCtrl.sliders[$index].isSelected]\'></li>' +
         '</ol>' +
-        '<span>{{carouselCtrl.sliders.length}}</span>'+
         '<div class="numRadius" ng-if="indexShow"><span ng-bind="selectedIndex"></span><span>/</span><span ng-bind="dotData.length"></span></div>' +
         '</div>',
         compile: function () {
