@@ -73,7 +73,7 @@ sliderApp.service('sliderSrv', ['$timeout', function ($timeout) {
          * */
         initDots: function () {
             var self = this, arr = [];
-            if (self.scope.myData && self.scope.myData.length > 0) {
+            if (self.scope.myData && self.scope.myData.length > 1) {
                 for (var i = 0; i < self.scope.myData.length; i++) {
                     arr.push(self.scope.myData[i]);
                 }
@@ -181,13 +181,13 @@ sliderApp.service('sliderSrv', ['$timeout', function ($timeout) {
                         item.isSelected = false;
                     })
                     if (index >= self.size) {
-                        self.scope['carouselCtrl'].sliders[0].isSelected = true;
+                        self.scope['carouselCtrl'].sliders[0] && (self.scope['carouselCtrl'].sliders[0].isSelected = true);
                     }
                     else if (index < 0) {
-                        self.scope['carouselCtrl'].sliders[self.size - 1].isSelected = true;
+                        self.scope['carouselCtrl'].sliders[self.size - 1] &&(self.scope['carouselCtrl'].sliders[self.size - 1].isSelected = true);
                     }
                     else {
-                        self.scope['carouselCtrl'].sliders[index].isSelected = true;
+                        self.scope['carouselCtrl'].sliders[index] && (self.scope['carouselCtrl'].sliders[index].isSelected = true);
                     }
                 })
             }
